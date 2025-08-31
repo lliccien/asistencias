@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Formulario ENTRADA/SALIDA</title>
+  <style>
+    /* Diseño mobile-first, centrado vertical y horizontal */
+    :root {
+      --bg: #0f172a;      /* slate-900 */
+      --card: #111827;    /* gray-900 */
+      --txt: #e5e7eb;     /* gray-200 */
+      --muted: #9ca3af;   /* gray-400 */
+      --accent: #3b82f6;  /* blue-500 */
+      --error: #ef4444;   /* red-500 */
+      --ok: #10b981;      /* emerald-500 */
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; padding: 16px; color: var(--txt);
+      background: linear-gradient(135deg, #0b1022, var(--bg));
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial;
+      min-height: 100svh; /* mejor en móviles con barras dinámicas */
+      display: grid; place-items: center; /* centra V+H */
+    }
+
+    .card {
+      width: 100%; max-width: 420px; background: var(--card);
+      border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,.06);
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+
+    h1 { font-size: 1.1rem; margin: 0 0 10px; }
+    .sub { margin: 0 0 16px; font-size: .9rem; color: var(--muted); }
+    .field { margin-bottom: 14px; }
+    label { display: block; margin-bottom: 6px; font-size: .9rem; }
+
+    select, input[type="date"], input[type="time"], button {
+      width: 100%; padding: 12px 14px; border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: #0b1220; color: var(--txt); font-size: 1rem; outline: none;
+    }
+
+    select:focus, input:focus, button:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59,130,246,.25);
+    }
+
+    small.hint { display: block; color: var(--muted); margin-top: 6px; }
+    small.error { display: none; color: var(--error); margin-top: 6px; }
+    .field.invalid small.error { display: block; }
+    .field.invalid select,
+    .field.invalid input { border-color: var(--error); }
+
+    button { margin-top: 6px; background: var(--accent); border: 1px solid transparent; cursor: pointer; font-weight: 600; }
+    button:hover { filter: brightness(1.05); }
+
+    .loading { opacity: .7; pointer-events: none; }
+
+    /* Snackbar */
+    .snackbar {
+      position: fixed;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%) translateY(120%);
+      min-width: 240px;
+      max-width: min(92vw, 560px);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      border: 1px solid rgba(255,255,255,.08);
+      opacity: 0;
+      transition: transform .28s ease, opacity .28s ease;
+      z-index: 1000;
+    }
+    .snackbar.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .snackbar.ok  { background: rgba(16,185,129,.12); color: #bbf7d0; border-color: rgba(16,185,129,.35); }
+    .snackbar.err { background: rgba(239,68,68,.12); color: #fecaca; border-color: rgba(239,68,68,.35); }
+  </style>
+</head>
+<body>
+  <form class="card" id="movForm" novalidate>
+    <h1>Registrar movimiento</h1>
+    <p class="sub">Se enviará un JSON por POST al webhook de n8n.</p>
+
+    <!-- Tipo -->
+    <div class="field" id="f-tipo">
+      <label for="tipo">Tipo</label>
+      <select name="tipo" id="tipo" required>
+        <option value="">Selecciona…</option>
+        <option value="ENTRADA">ENTRADA</option>
+        <option value="SALIDA">SALIDA</option>
+      </select>
+      <small class="error">Selecciona ENTRADA o SALIDA.</small>
+    </div>
+
+    <!-- Fecha con selector nativo (yyyy-mm-dd) -->
+    <div class="field" id="f-fecha">
+      <label for="fecha">Fecha</label>
+      <input id="fecha" name="fecha" type="date" required />
+      <small class="hint">Usa el calendario para elegir la fecha.</small>
+      <small class="error">Selecciona una fecha válida.</small>
+    </div>
+
+    <!-- Hora con selector nativo (HH:MM 24h) -->
+    <div class="field" id="f-hora">
+      <label for="hora">Hora</label>
+      <input id="hora" name="hora" type="time" required step="60" />
+      <small class="hint">Formato 24h: HH:MM.</small>
+      <small class="error">Selecciona una hora válida.</small>
+    </div>
+
+    <button type="submit" id="btnSubmit">Enviar</button>
+  </form>
+
+  <!-- Snackbar -->
+  <div id="snackbar" class="snackbar" role="status" aria-live="polite"></div>
+
+  <script>
+    const WEBHOOK_URL = "https://n8n.ludwringliccien.dev/webhook/asistencias";
+
+    // Helpers UI y validación
+    const form = document.getElementById('movForm');
+    const btn = document.getElementById('btnSubmit');
+    const snackbar = document.getElementById('snackbar');
+    const fieldWrap = (id) => document.getElementById(id);
+
+    function setValidity(fieldId, valid) {
+      const wrap = fieldWrap(fieldId);
+      if (!wrap) return;
+      wrap.classList.toggle('invalid', !valid);
+    }
+    function showSnack(type, msg, ms = 3500) {
+      snackbar.textContent = msg;
+      snackbar.className = `snackbar ${type}`;
+      requestAnimationFrame(() => snackbar.classList.add('show'));
+      clearTimeout(showSnack._t);
+      showSnack._t = setTimeout(() => snackbar.classList.remove('show'), ms);
+    }
+
+    // Conversión: de ISO (yyyy-mm-dd) a dd/mm/aaaa
+    function isoToDDMMYYYY(iso) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return '';
+      const [y, m, d] = iso.split('-');
+      return `${d}/${m}/${y}`;
+    }
+
+    // Validación básica de hora HH:MM
+    function isValidHHMM(hhmm) {
+      return /^\d{2}:\d{2}$/.test(hhmm);
+    }
+
+    // --- Pruebas rápidas en consola ("test cases") ---
+    try {
+      console.assert(isoToDDMMYYYY('2025-08-31') === '31/08/2025', 'isoToDDMMYYYY debe convertir correctamente');
+      console.assert(isValidHHMM('09:05') === true, 'isValidHHMM debe aceptar 09:05');
+      console.assert(isValidHHMM('23:59') === true, 'isValidHHMM debe aceptar 23:59');
+      console.assert(isValidHHMM('9:5') === false, 'isValidHHMM debe rechazar 9:5');
+    } catch (_) { /* ignorar en producción */ }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const tipoOk = form.tipo.value === 'ENTRADA' || form.tipo.value === 'SALIDA';
+      setValidity('f-tipo', tipoOk);
+
+      const fechaISO = form.fecha.value; // yyyy-mm-dd
+      const fechaOk = /^\d{4}-\d{2}-\d{2}$/.test(fechaISO);
+      setValidity('f-fecha', fechaOk);
+
+      const horaVal = form.hora.value; // HH:MM
+      const horaOk = isValidHHMM(horaVal);
+      setValidity('f-hora', horaOk);
+
+      if (!tipoOk || !fechaOk || !horaOk) {
+        // Validación local: no llamar al webhook
+        return;
+      }
+
+      // Payload JSON: envía la fecha en dd/mm/aaaa + ISO opcional
+      const payload = {
+        tipo: form.tipo.value,
+        fecha: isoToDDMMYYYY(fechaISO), // requerido en dd/mm/aaaa
+        fecha_iso: fechaISO,             // opcional para tu backend
+        hora: horaVal                    // HH:MM (24h)
+      };
+
+      // UI: loading
+      form.classList.add('loading');
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json, text/plain, */*'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        let responseText = '';
+        const contentType = res.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          const data = await res.json();
+          responseText = JSON.stringify(data);
+        } else {
+          responseText = await res.text();
+        }
+
+        if (!res.ok) {
+          showSnack('err', 'ERROR INTENTELO DE NUEVO');
+        } else {
+          showSnack('ok', `${form.tipo.value} guardada`);
+          form.reset();
+        }
+      } catch (err) {
+        console.error('Error de red o CORS:', err);
+        showSnack('err', 'ERROR INTENTELO DE NUEVO');
+      } finally {
+        form.classList.remove('loading');
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
