@@ -205,11 +205,23 @@
 
         let responseText = '';
         const contentType = res.headers.get('content-type') || '';
-        if (contentType.includes('application/json')) {
-          const data = await res.json();
-          responseText = JSON.stringify(data);
-        } else {
-          responseText = await res.text();
+        
+        try {
+          if (contentType.includes('application/json')) {
+            const data = await res.json();
+            responseText = JSON.stringify(data);
+          } else {
+            responseText = await res.text();
+          }
+        } catch (parseError) {
+          // Si falla el parsing JSON, intentar como texto
+          console.warn('Error parsing response as JSON, trying as text:', parseError);
+          try {
+            responseText = await res.text();
+          } catch (textError) {
+            console.warn('Error reading response as text:', textError);
+            responseText = '';
+          }
         }
 
         if (!res.ok) {
