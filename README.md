@@ -56,11 +56,38 @@ Un formulario web simple y elegante para registrar entradas y salidas de persona
   - Background Sync para sincronización
   - Push Notifications (opcional)
 
+## 🏗️ Arquitectura y Mejores Prácticas
+
+### **Separación de Responsabilidades**
+- ✅ **HTML**: Estructura semántica limpia sin estilos ni lógica
+- ✅ **CSS**: Estilos organizados en archivo separado con variables CSS
+- ✅ **JavaScript**: Lógica modular en archivos separados
+
+### **Organización de Archivos**
+- **`index.html`**: HTML puro y semántico
+- **`styles.css`**: Todos los estilos organizados por secciones
+- **`app.js`**: Lógica principal de la aplicación
+- **`config.js`**: Configuración centralizada y detección de entorno
+
+### **Mantenibilidad**
+- ✅ **Código modular**: Funciones organizadas por funcionalidad
+- ✅ **Comentarios descriptivos**: Documentación clara del código
+- ✅ **Nomenclatura consistente**: Variables y funciones con nombres descriptivos
+- ✅ **Configuración centralizada**: Variables globales en archivo separado
+
+### **Rendimiento**
+- ✅ **Archivos separados**: Mejor cache del navegador
+- ✅ **CSS optimizado**: Variables CSS para consistencia
+- ✅ **JavaScript modular**: Carga eficiente de funcionalidades
+
 ## 📦 Estructura del Proyecto
 
 ```
 asistencia/
-├── index.html              # Formulario principal
+├── index.html              # Formulario principal (HTML limpio)
+├── styles.css              # Estilos CSS separados
+├── app.js                  # Lógica JavaScript principal
+├── config.js               # Configuración de rutas y entorno
 ├── manifest.json           # Configuración PWA
 ├── sw.js                   # Service Worker
 ├── offline.html            # Página offline

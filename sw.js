@@ -8,6 +8,9 @@ const STATIC_FILES = [
   './index.html',
   './offline.html',
   './manifest.json',
+  './styles.css',
+  './app.js',
+  './config.js',
   './icons/icon-192x192.png',
   './icons/icon-512x512.png'
 ];

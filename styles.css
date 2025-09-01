@@ -1,0 +1,351 @@
+/* ===== VARIABLES CSS ===== */
+:root {
+  --bg: #0f172a;      /* slate-900 */
+  --card: #111827;    /* gray-900 */
+  --txt: #e5e7eb;     /* gray-200 */
+  --muted: #9ca3af;   /* gray-400 */
+  --accent: #3b82f6;  /* blue-500 */
+  --error: #ef4444;   /* red-500 */
+  --ok: #10b981;      /* emerald-500 */
+}
+
+/* ===== RESET Y BASE ===== */
+* { 
+  box-sizing: border-box; 
+}
+
+html, body { 
+  height: 100%; 
+}
+
+body {
+  margin: 0; 
+  padding: 16px; 
+  color: var(--txt);
+  background: linear-gradient(135deg, #0b1022, var(--bg));
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial;
+  min-height: 100svh; /* mejor en móviles con barras dinámicas */
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; /* centra V+H */
+}
+
+/* ===== LAYOUT ===== */
+.cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.card {
+  width: 100%; 
+  background: var(--card);
+  border-radius: 16px; 
+  padding: 20px; 
+  border: 1px solid rgba(255,255,255,.06);
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+
+/* ===== TIPOGRAFÍA ===== */
+h1 { 
+  font-size: 1.1rem; 
+  margin: 0 0 10px; 
+}
+
+.sub { 
+  margin: 0 0 16px; 
+  font-size: .9rem; 
+  color: var(--muted); 
+}
+
+/* ===== FORMULARIOS ===== */
+.field { 
+  margin-bottom: 14px; 
+}
+
+label { 
+  display: block; 
+  margin-bottom: 6px; 
+  font-size: .9rem; 
+}
+
+select, input[type="date"], input[type="time"], button {
+  width: 100%; 
+  padding: 12px 14px; 
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: #0b1220; 
+  color: var(--txt); 
+  font-size: 1rem; 
+  outline: none;
+}
+
+select:focus, input:focus, button:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59,130,246,.25);
+}
+
+small.hint { 
+  display: block; 
+  color: var(--muted); 
+  margin-top: 6px; 
+}
+
+small.error { 
+  display: none; 
+  color: var(--error); 
+  margin-top: 6px; 
+}
+
+.field.invalid small.error { 
+  display: block; 
+}
+
+.field.invalid select,
+.field.invalid input { 
+  border-color: var(--error); 
+}
+
+button { 
+  margin-top: 6px; 
+  background: var(--accent); 
+  border: 1px solid transparent; 
+  cursor: pointer; 
+  font-weight: 600; 
+}
+
+button:hover { 
+  filter: brightness(1.05); 
+}
+
+.loading { 
+  opacity: .7; 
+  pointer-events: none; 
+}
+
+/* ===== AUTOCOMPLETADO ===== */
+.input-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.input-group input {
+  flex: 1;
+}
+
+.btn-now {
+  width: auto;
+  min-width: 44px;
+  height: 44px;
+  padding: 0;
+  margin: 0;
+  border-radius: 10px;
+  background: rgba(59,130,246,.15);
+  border: 1px solid rgba(59,130,246,.3);
+  color: var(--accent);
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-now:hover {
+  background: rgba(59,130,246,.25);
+  border-color: var(--accent);
+  transform: scale(1.05);
+}
+
+.btn-now:active {
+  transform: scale(0.95);
+}
+
+.btn-autocomplete {
+  width: 100%;
+  background: linear-gradient(135deg, var(--ok), #059669);
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(16,185,129,.3);
+}
+
+.btn-autocomplete:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16,185,129,.4);
+}
+
+.btn-autocomplete:active {
+  transform: translateY(0);
+}
+
+.btn-autocomplete.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+  margin: 0;
+}
+
+.btn-link:hover {
+  color: #60a5fa;
+}
+
+/* ===== SNACKBAR ===== */
+.snackbar {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%) translateY(120%);
+  min-width: 240px;
+  max-width: min(92vw, 560px);
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  border: 1px solid rgba(255,255,255,.08);
+  opacity: 0;
+  transition: transform .28s ease, opacity .28s ease;
+  z-index: 1000;
+}
+
+.snackbar.show { 
+  transform: translateX(-50%) translateY(0); 
+  opacity: 1; 
+}
+
+.snackbar.ok { 
+  background: rgba(16,185,129,.12); 
+  color: #bbf7d0; 
+  border-color: rgba(16,185,129,.35); 
+}
+
+.snackbar.err { 
+  background: rgba(239,68,68,.12); 
+  color: #fecaca; 
+  border-color: rgba(239,68,68,.35); 
+}
+
+/* ===== CARD DE DESCARGA ===== */
+.download-card {
+  /* El espaciado ahora se maneja con gap en el contenedor */
+}
+
+.download-card h2 {
+  font-size: 1.1rem;
+  margin: 0 0 8px;
+  color: var(--txt);
+}
+
+.download-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.download-btn {
+  background: linear-gradient(135deg, var(--ok), #059669);
+  color: white;
+  border: none;
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(16,185,129,.3);
+}
+
+.download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16,185,129,.4);
+}
+
+.download-btn:active {
+  transform: translateY(0);
+}
+
+.download-btn.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.download-icon {
+  font-size: 1.2rem;
+}
+
+.download-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.download-info small {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+  body {
+    padding: 12px;
+  }
+  
+  .cards-container {
+    max-width: 100%;
+  }
+  
+  .card {
+    padding: 16px;
+  }
+  
+  .snackbar {
+    min-width: calc(100vw - 32px);
+    max-width: calc(100vw - 32px);
+  }
+}
+
+/* ===== ESTADOS OFFLINE ===== */
+body.offline {
+  opacity: 0.8;
+}
+
+body.offline::before {
+  content: "Sin conexión";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: var(--error);
+  color: white;
+  text-align: center;
+  padding: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  z-index: 1001;
+}
