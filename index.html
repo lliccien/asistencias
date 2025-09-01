@@ -7,16 +7,18 @@
   
   <!-- PWA Meta Tags -->
   <meta name="theme-color" content="#3b82f6" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Asistencia" />
   <meta name="description" content="Formulario web para registrar entradas y salidas de personal" />
   
   <!-- PWA Icons -->
-  <link rel="icon" type="image/png" sizes="32x32" href="/asistencias/icons/icon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/asistencias/icons/icon-16x16.png" />
-  <link rel="apple-touch-icon" href="/asistencias/icons/icon-192x192.png" />
-  <link rel="manifest" href="/asistencias/manifest.json" />
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16x16.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192x192.png" />
+  <link rel="manifest" href="manifest.json" />
+  <script src="config.js"></script>
   <style>
     /* Diseño mobile-first, centrado vertical y horizontal */
     :root {
@@ -322,7 +324,9 @@
 
 
   <script>
-    const WEBHOOK_URL = "https://n8n.ludwringliccien.dev/webhook/asistencias";
+    // Usar configuración global
+    const WEBHOOK_URL = window.APP_CONFIG ? window.APP_CONFIG.WEBHOOK_URL : "https://n8n.ludwringliccien.dev/webhook/asistencias";
+    const BASE_PATH = window.APP_CONFIG ? window.APP_CONFIG.BASE_PATH : '';
 
     // Helpers UI y validación
     const form = document.getElementById('movForm');
@@ -531,7 +535,8 @@
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', async () => {
         try {
-          const registration = await navigator.serviceWorker.register('/asistencias/sw.js');
+          const swPath = BASE_PATH + '/sw.js';
+          const registration = await navigator.serviceWorker.register(swPath);
           console.log('Service Worker registrado:', registration);
           
           // Manejar actualizaciones del Service Worker
@@ -576,14 +581,7 @@
       });
     }
 
-    // Notificaciones push (opcional)
-    if ('Notification' in window && 'serviceWorker' in navigator) {
-      Notification.requestPermission().then(permission => {
-        if (permission === 'granted') {
-          console.log('Permisos de notificación concedidos');
-        }
-      });
-    }
+
 
     // ===== FUNCIONALIDAD DE DESCARGA =====
     

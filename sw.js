@@ -4,12 +4,12 @@ const DYNAMIC_CACHE = 'asistencia-dynamic-v1.0.0';
 
 // Archivos a cachear inmediatamente
 const STATIC_FILES = [
-  '/asistencias/',
-  '/asistencias/index.html',
-  '/asistencias/offline.html',
-  '/asistencias/manifest.json',
-  '/asistencias/icons/icon-192x192.png',
-  '/asistencias/icons/icon-512x512.png'
+  './',
+  './index.html',
+  './offline.html',
+  './manifest.json',
+  './icons/icon-192x192.png',
+  './icons/icon-512x512.png'
 ];
 
 // Función para cachear archivos estáticos
@@ -87,7 +87,7 @@ self.addEventListener('fetch', (event) => {
   }
   
   // Estrategia para archivos estáticos: Cache First
-  if (STATIC_FILES.includes(url.pathname) || url.pathname === '/asistencias/') {
+  if (STATIC_FILES.includes(url.pathname) || url.pathname === '/' || url.pathname === '/index.html') {
     event.respondWith(
       caches.match(request).then((response) => {
         return response || fetch(request);
@@ -148,7 +148,7 @@ self.addEventListener('fetch', (event) => {
           
           // Si no hay cache y es una petición de página, mostrar offline.html
           if (request.headers.get('accept')?.includes('text/html')) {
-            const offlineResponse = await caches.match('/asistencias/offline.html');
+            const offlineResponse = await caches.match('./offline.html');
             if (offlineResponse) {
               return offlineResponse;
             }

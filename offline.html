@@ -99,7 +99,7 @@
         if (response.ok) {
           showStatus('¡Conexión restaurada! Redirigiendo...', 'connected');
           setTimeout(() => {
-            window.location.href = '/asistencias/';
+            window.location.href = './';
           }, 1500);
         } else {
           throw new Error('Servidor no responde correctamente');
