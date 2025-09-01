@@ -80,6 +80,91 @@
 
     .loading { opacity: .7; pointer-events: none; }
 
+    /* Estilos para autocompletado */
+    .input-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    
+    .input-group input {
+      flex: 1;
+    }
+    
+    .btn-now {
+      width: auto;
+      min-width: 44px;
+      height: 44px;
+      padding: 0;
+      margin: 0;
+      border-radius: 10px;
+      background: rgba(59,130,246,.15);
+      border: 1px solid rgba(59,130,246,.3);
+      color: var(--accent);
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-now:hover {
+      background: rgba(59,130,246,.25);
+      border-color: var(--accent);
+      transform: scale(1.05);
+    }
+    
+    .btn-now:active {
+      transform: scale(0.95);
+    }
+    
+    .btn-autocomplete {
+      width: 100%;
+      background: linear-gradient(135deg, var(--ok), #059669);
+      color: white;
+      border: none;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(16,185,129,.3);
+    }
+    
+    .btn-autocomplete:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16,185,129,.4);
+    }
+    
+    .btn-autocomplete:active {
+      transform: translateY(0);
+    }
+    
+    .btn-autocomplete.loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    
+    .btn-link {
+      background: none;
+      border: none;
+      color: var(--accent);
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: inherit;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .btn-link:hover {
+      color: #60a5fa;
+    }
+
     /* Snackbar */
     .snackbar {
       position: fixed;
@@ -102,46 +187,7 @@
     .snackbar.ok  { background: rgba(16,185,129,.12); color: #bbf7d0; border-color: rgba(16,185,129,.35); }
     .snackbar.err { background: rgba(239,68,68,.12); color: #fecaca; border-color: rgba(239,68,68,.35); }
 
-    /* PWA Install Prompt */
-    .install-prompt {
-      position: fixed;
-      bottom: 16px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--card);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 12px;
-      padding: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.35);
-      z-index: 1001;
-      max-width: 320px;
-      width: calc(100vw - 32px);
-    }
-    .install-content p {
-      margin: 0 0 12px;
-      font-size: 0.9rem;
-      color: var(--txt);
-    }
-    .install-btn, .dismiss-btn {
-      padding: 8px 16px;
-      border-radius: 8px;
-      border: none;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      margin-right: 8px;
-    }
-    .install-btn {
-      background: var(--accent);
-      color: white;
-    }
-    .dismiss-btn {
-      background: transparent;
-      color: var(--muted);
-      border: 1px solid rgba(255,255,255,.12);
-    }
-    .install-btn:hover { filter: brightness(1.05); }
-    .dismiss-btn:hover { background: rgba(255,255,255,.05); }
+
 
     /* Card de Descarga */
     .download-card {
@@ -218,7 +264,12 @@
       <!-- Fecha con selector nativo (yyyy-mm-dd) -->
       <div class="field" id="f-fecha">
         <label for="fecha">Fecha</label>
-        <input id="fecha" name="fecha" type="date" required />
+        <div class="input-group">
+          <input id="fecha" name="fecha" type="date" required />
+          <button type="button" id="btnFechaActual" class="btn-now" title="Usar fecha actual">
+            <span>📅</span>
+          </button>
+        </div>
         <small class="hint">Usa el calendario para elegir la fecha.</small>
         <small class="error">Selecciona una fecha válida.</small>
       </div>
@@ -226,9 +277,21 @@
       <!-- Hora con selector nativo (HH:MM 24h) -->
       <div class="field" id="f-hora">
         <label for="hora">Hora</label>
-        <input id="hora" name="hora" type="time" required step="60" />
+        <div class="input-group">
+          <input id="hora" name="hora" type="time" required step="60" />
+          <button type="button" id="btnHoraActual" class="btn-now" title="Usar hora actual">
+            <span>🕐</span>
+          </button>
+        </div>
         <small class="hint">Formato 24h: HH:MM.</small>
         <small class="error">Selecciona una hora válida.</small>
+      </div>
+
+      <!-- Botón para autocompletar todo -->
+      <div class="field">
+        <button type="button" id="btnAutocompletar" class="btn-autocomplete">
+          <span>⚡</span> Autocompletar fecha y hora actual
+        </button>
       </div>
 
       <button type="submit" id="btnSubmit">Enviar</button>
@@ -256,14 +319,7 @@
   <!-- Snackbar -->
   <div id="snackbar" class="snackbar" role="status" aria-live="polite"></div>
 
-  <!-- PWA Install Prompt -->
-  <div id="installPrompt" class="install-prompt" style="display: none;">
-    <div class="install-content">
-      <p>📱 Instalar como aplicación</p>
-      <button id="installBtn" class="install-btn">Instalar</button>
-      <button id="dismissBtn" class="dismiss-btn">Más tarde</button>
-    </div>
-  </div>
+
 
   <script>
     const WEBHOOK_URL = "https://n8n.ludwringliccien.dev/webhook/asistencias";
@@ -297,6 +353,73 @@
     // Validación básica de hora HH:MM
     function isValidHHMM(hhmm) {
       return /^\d{2}:\d{2}$/.test(hhmm);
+    }
+
+    // ===== FUNCIONES DE AUTOCOMPLETADO =====
+    
+    // Obtener fecha actual en formato ISO (yyyy-mm-dd)
+    function getFechaActual() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+    
+    // Obtener hora actual en formato HH:MM
+    function getHoraActual() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      return `${hours}:${minutes}`;
+    }
+    
+    // Autocompletar fecha actual
+    function autocompletarFecha() {
+      const fechaInput = document.getElementById('fecha');
+      const fechaActual = getFechaActual();
+      fechaInput.value = fechaActual;
+      
+      // Limpiar validación
+      setValidity('f-fecha', true);
+      
+      // Mostrar feedback
+      showSnack('ok', `Fecha actual: ${isoToDDMMYYYY(fechaActual)}`);
+    }
+    
+    // Autocompletar hora actual
+    function autocompletarHora() {
+      const horaInput = document.getElementById('hora');
+      const horaActual = getHoraActual();
+      horaInput.value = horaActual;
+      
+      // Limpiar validación
+      setValidity('f-hora', true);
+      
+      // Mostrar feedback
+      showSnack('ok', `Hora actual: ${horaActual}`);
+    }
+    
+    // Autocompletar fecha y hora actual
+    function autocompletarTodo() {
+      const btnAutocompletar = document.getElementById('btnAutocompletar');
+      
+      // Estado de carga
+      btnAutocompletar.classList.add('loading');
+      btnAutocompletar.innerHTML = '<span>⏳</span> Autocompletando...';
+      
+      // Simular pequeña pausa para feedback visual
+      setTimeout(() => {
+        autocompletarFecha();
+        autocompletarHora();
+        
+        // Restaurar botón
+        btnAutocompletar.classList.remove('loading');
+        btnAutocompletar.innerHTML = '<span>⚡</span> Autocompletar fecha y hora actual';
+        
+        // Mostrar mensaje final
+        showSnack('ok', 'Fecha y hora actuales autocompletadas');
+      }, 300);
     }
 
     // --- Pruebas rápidas en consola ("test cases") ---
@@ -384,6 +507,24 @@
       }
     });
 
+    // ===== EVENT LISTENERS PARA AUTOCOMPLETADO =====
+    
+    // Botón de fecha actual
+    document.getElementById('btnFechaActual').addEventListener('click', autocompletarFecha);
+    
+    // Botón de hora actual
+    document.getElementById('btnHoraActual').addEventListener('click', autocompletarHora);
+    
+    // Botón de autocompletar todo
+    document.getElementById('btnAutocompletar').addEventListener('click', autocompletarTodo);
+
+    // ===== AUTOCOMPLETADO AUTOMÁTICO AL CARGAR =====
+    
+    // Autocompletar automáticamente al cargar la página
+    window.addEventListener('load', () => {
+      setTimeout(autocompletarTodo, 500);
+    });
+
     // ===== PWA FUNCTIONALITY =====
     
     // Service Worker Registration
@@ -408,45 +549,7 @@
       });
     }
 
-    // PWA Install Prompt
-    let deferredPrompt;
-    const installPrompt = document.getElementById('installPrompt');
-    const installBtn = document.getElementById('installBtn');
-    const dismissBtn = document.getElementById('dismissBtn');
 
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      
-      // Mostrar prompt después de 3 segundos
-      setTimeout(() => {
-        if (deferredPrompt && !localStorage.getItem('installPromptDismissed')) {
-          installPrompt.style.display = 'block';
-        }
-      }, 3000);
-    });
-
-    installBtn.addEventListener('click', async () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log('Usuario eligió:', outcome);
-        deferredPrompt = null;
-        installPrompt.style.display = 'none';
-      }
-    });
-
-    dismissBtn.addEventListener('click', () => {
-      installPrompt.style.display = 'none';
-      localStorage.setItem('installPromptDismissed', 'true');
-    });
-
-    // Detectar si la app está instalada
-    window.addEventListener('appinstalled', () => {
-      console.log('PWA instalada');
-      installPrompt.style.display = 'none';
-      showSnack('ok', '¡Aplicación instalada exitosamente!');
-    });
 
     // Detectar estado de conexión
     function updateOnlineStatus() {

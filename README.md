@@ -31,6 +31,12 @@ Un formulario web simple y elegante para registrar entradas y salidas de persona
 - Formato .xlsx con fecha automática en el nombre
 - Descarga directa sin intermediarios
 
+### Autocompletado Inteligente
+- **Autocompletado automático**: Fecha y hora actuales se autocompletan al cargar la página
+- **Botones individuales**: Autocompletar fecha actual (📅) y hora actual (🕐)
+- **Botón principal**: Autocompletar fecha y hora actuales de una vez (⚡)
+- **Feedback visual**: Notificaciones confirmando el autocompletado
+
 ## 🛠️ Tecnologías Utilizadas
 
 - **HTML5**: Estructura semántica y formularios nativos
@@ -127,10 +133,17 @@ const GOOGLE_SHEETS_URL = "https://docs.google.com/spreadsheets/d/ID_DEL_DOCUMEN
 
 1. Abre la aplicación en: https://lliccien.github.io/asistencias/
 2. Selecciona el tipo de movimiento (ENTRADA o SALIDA)
-3. Elige la fecha usando el selector de calendario
-4. Selecciona la hora en formato 24h
+3. **Autocompletado rápido**: 
+   - Usa el botón ⚡ para autocompletar fecha y hora actuales
+   - O usa los botones individuales 📅 y 🕐 para fecha y hora por separado
+4. Alternativamente, elige manualmente la fecha y hora
 5. Haz clic en "Enviar"
 6. Recibe confirmación visual del envío exitoso
+
+### ⚡ Autocompletado Automático
+- La aplicación autocompleta automáticamente la fecha y hora actuales al cargar
+- No requiere configuración previa ni confirmación del usuario
+- Funciona de forma transparente para una experiencia más fluida
 
 ### Descargar Reporte
 1. Haz clic en el botón "Descargar Excel" en la card inferior
@@ -204,7 +217,7 @@ Para generar los iconos de la PWA:
 - [x] ✅ PWA con Service Workers
 - [x] ✅ Funcionamiento offline
 - [x] ✅ Sincronización en segundo plano
-- [ ] Autocompletado de fecha/hora actual
+- [x] ✅ Autocompletado de fecha/hora actual
 - [ ] Exportación de datos a CSV
 - [ ] Dashboard de estadísticas
 - [ ] Autenticación de usuarios
