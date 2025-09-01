@@ -24,8 +24,12 @@ async function cacheStaticFiles() {
 
 // Función para cachear respuesta dinámica
 async function cacheDynamicResponse(request, response) {
-  const cache = await caches.open(DYNAMIC_CACHE);
-  await cache.put(request, response.clone());
+  try {
+    const cache = await caches.open(DYNAMIC_CACHE);
+    await cache.put(request, response);
+  } catch (error) {
+    console.warn('Error cacheando respuesta dinámica:', error);
+  }
 }
 
 // Función para obtener respuesta del cache
@@ -103,10 +107,12 @@ self.addEventListener('fetch', (event) => {
   if (url.hostname === 'n8n.ludwringliccien.dev') {
     event.respondWith(
       fetch(request)
-        .then((response) => {
+        .then(async (response) => {
           // Solo cachear respuestas exitosas
           if (response.ok) {
-            cacheDynamicResponse(request, response);
+            // Clonar la respuesta antes de cachearla
+            const clonedResponse = response.clone();
+            await cacheDynamicResponse(request, clonedResponse);
           }
           return response;
         })
@@ -137,28 +143,30 @@ self.addEventListener('fetch', (event) => {
   // Estrategia por defecto: Network First
   event.respondWith(
     fetch(request)
-      .then((response) => {
+      .then(async (response) => {
         if (response.ok) {
-          cacheDynamicResponse(request, response);
+          // Clonar la respuesta antes de cachearla
+          const clonedResponse = response.clone();
+          await cacheDynamicResponse(request, clonedResponse);
         }
         return response;
       })
-              .catch(async () => {
-          const cachedResponse = await getCachedResponse(request);
-          if (cachedResponse) {
-            return cachedResponse;
+      .catch(async () => {
+        const cachedResponse = await getCachedResponse(request);
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+        
+        // Si no hay cache y es una petición de página, mostrar offline.html
+        if (request.headers.get('accept')?.includes('text/html')) {
+          const offlineResponse = await caches.match('./offline.html');
+          if (offlineResponse) {
+            return offlineResponse;
           }
-          
-          // Si no hay cache y es una petición de página, mostrar offline.html
-          if (request.headers.get('accept')?.includes('text/html')) {
-            const offlineResponse = await caches.match('./offline.html');
-            if (offlineResponse) {
-              return offlineResponse;
-            }
-          }
-          
-          return new Response('Sin conexión', { status: 503 });
-        })
+        }
+        
+        return new Response('Sin conexión', { status: 503 });
+      })
   );
 });
 
