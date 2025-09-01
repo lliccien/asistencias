@@ -4,11 +4,12 @@ const DYNAMIC_CACHE = 'asistencia-dynamic-v1.0.0';
 
 // Archivos a cachear inmediatamente
 const STATIC_FILES = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
+  '/asistencias/',
+  '/asistencias/index.html',
+  '/asistencias/offline.html',
+  '/asistencias/manifest.json',
+  '/asistencias/icons/icon-192x192.png',
+  '/asistencias/icons/icon-512x512.png'
 ];
 
 // Función para cachear archivos estáticos
@@ -86,7 +87,7 @@ self.addEventListener('fetch', (event) => {
   }
   
   // Estrategia para archivos estáticos: Cache First
-  if (STATIC_FILES.includes(url.pathname) || url.pathname === '/') {
+  if (STATIC_FILES.includes(url.pathname) || url.pathname === '/asistencias/') {
     event.respondWith(
       caches.match(request).then((response) => {
         return response || fetch(request);
@@ -139,10 +140,22 @@ self.addEventListener('fetch', (event) => {
         }
         return response;
       })
-      .catch(async () => {
-        const cachedResponse = await getCachedResponse(request);
-        return cachedResponse || new Response('Sin conexión', { status: 503 });
-      })
+              .catch(async () => {
+          const cachedResponse = await getCachedResponse(request);
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          
+          // Si no hay cache y es una petición de página, mostrar offline.html
+          if (request.headers.get('accept')?.includes('text/html')) {
+            const offlineResponse = await caches.match('/asistencias/offline.html');
+            if (offlineResponse) {
+              return offlineResponse;
+            }
+          }
+          
+          return new Response('Sin conexión', { status: 503 });
+        })
   );
 });
 

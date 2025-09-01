@@ -59,8 +59,18 @@ asistencia/
 ├── sw.js                   # Service Worker
 ├── offline.html            # Página offline
 ├── generate-icons.html     # Generador de iconos PWA
+├── icons/                  # Iconos PWA en múltiples tamaños
 └── README.md              # Documentación del proyecto
 ```
+
+## 🌐 URL de Instalación
+
+La aplicación está disponible en: **https://lliccien.github.io/asistencias/**
+
+Para instalar como PWA:
+1. Abre la URL en Chrome/Edge
+2. Haz clic en el icono de instalación en la barra de direcciones
+3. O usa el prompt de instalación que aparece automáticamente
 
 ## 🔧 Configuración
 
@@ -115,7 +125,7 @@ const GOOGLE_SHEETS_URL = "https://docs.google.com/spreadsheets/d/ID_DEL_DOCUMEN
 
 ## 🚀 Uso
 
-1. Abre `index.html` en tu navegador web
+1. Abre la aplicación en: https://lliccien.github.io/asistencias/
 2. Selecciona el tipo de movimiento (ENTRADA o SALIDA)
 3. Elige la fecha usando el selector de calendario
 4. Selecciona la hora en formato 24h
